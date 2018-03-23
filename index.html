@@ -13,8 +13,13 @@
   <body>
     <h1>Air Quality Web App</h1>
     <input id="pac-input" class="controls" type="text" ng-model="locationInput" placeholder="Enter a location: ">
+    <div ng-controller="addrController">
+      <h4>{{address}}</h4>
+      <h4>{{lnglat}}</h4>
+    </div>
+
     <div id="map"></div>
-    
+
     <!--Table: needs to be updated so that it populates based on whats in the map. Currently populates based of of openAQ's measurements-->
 	<table ng-controller="tableController">
 		<th>Location</th><th>Value</th>

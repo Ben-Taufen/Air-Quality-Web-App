@@ -1,3 +1,17 @@
+var lnglat;
+var airQualityApp = angular.module('airQualityApp',[]);
+//will show the current address and longitude/lat of the current center of the map
+//having trouble with the controller, probably a small error that I need to change
+//otherwise this code works
+//to get the current center, just use the lnglat variable. It stores a lnglat object.
+//to get the lat use the function lnglat.lat()
+airQualityApp.controller('addrController', function($scope, $http) {
+  $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lnglat + "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
+    $scope.address = response.data.results[0].formatted_address;
+    $scope.lnglat = lnglat;
+
+  });
+});
 function initMap() {
   var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: -33.8688, lng: 151.2195},
@@ -13,6 +27,8 @@ function initMap() {
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
           searchBox.setBounds(map.getBounds());
+
+          lnglat=map.getCenter();
         });
 
         var markers = [];
@@ -64,4 +80,5 @@ function initMap() {
           });
           map.fitBounds(bounds);
         });
+
 }
