@@ -10,10 +10,11 @@
   </head>
   <body>
     <h1>Air Quality Web App</h1>
+    <input id="pac-input" class="controls" type="text" ng-model="locationInput" placeholder="Enter a location: ">
     <div id="map"></div>
 
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs&libraries=places&callback=initMap">
    </script>
   </body>
 </html>
