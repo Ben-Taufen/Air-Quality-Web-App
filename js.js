@@ -1,20 +1,57 @@
 var lnglat;
+var lat = 17.6599188;
+var lng = 75.9063906;
+var radius = 1000;
 var airQualityApp = angular.module('airQualityApp',[]);
 //will show the current address and longitude/lat of the current center of the map
 //having trouble with the controller, probably a small error that I need to change
 //otherwise this code works
 //to get the current center, just use the lnglat variable. It stores a lnglat object.
 //to get the lat use the function lnglat.lat()
-airQualityApp.controller('addrController', function($scope, $http) {
-  $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lnglat + "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
-    $scope.address = response.data.results[0].formatted_address;
-    $scope.lnglat = lnglat;
+if(lnglat != null){
+  lat=lnglat.lat();
+  lng=lnglat.lng();
+}
+/*airQualityApp.controller('addrController', function($scope, $http) {
+  $scope.changeLL = function() {
+    console.log("in controller");
+    if(lnglat != null){
+      latit=lnglat.lat();
+      long=lnglat.lng();
+    }
+    $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +latit +","+long+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
+      $scope.address = response.data.results[0].formatted_address;
+      $scope.lnglat = lnglat;
+    });
+  }
+});*/
 
-  });
+airQualityApp.controller('tableController',function($scope, $http){
+	//
+  $scope.$watch(function($rootscope){ return document.getElementById('ll').value}, function(newValue,oldValue){
+    console.log(lnglat);
+    console.log(newValue);
+    if(newValue!=null){
+      lat=newValue.lat();
+      lng=newValue.lng();
+    }
+    $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+  		function(response)
+  		{
+        console.log("request made");
+  			$scope.tableData = response.data.results;
+  		}
+  	);
+
+  })
+
+
 });
+
+var map;
 function initMap() {
-  var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -33.8688, lng: 151.2195},
+  map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 17.6599188, lng: 75.9063906},
           zoom: 13,
           mapTypeId: 'roadmap'
         });
@@ -23,12 +60,16 @@ function initMap() {
         var input = document.getElementById('pac-input');
         var searchBox = new google.maps.places.SearchBox(input);
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
+        map.addListener('dragend', function(){
+          updateLnglat(map.getCenter());
+          radius = getBoundsRadius(map.getBounds());
+        })
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
           searchBox.setBounds(map.getBounds());
 
-          lnglat=map.getCenter();
+
+
         });
 
         var markers = [];
@@ -81,4 +122,27 @@ function initMap() {
           map.fitBounds(bounds);
         });
 
+}
+function updateLnglat(val){
+  lnglat=val;
+  document.getElementById('ll').value = lnglat;
+  //document.getElementById('ll').innerHTML = lnglat;
+  document.getElementById('ll').textContent = lnglat;
+}
+
+function getBoundsRadius(bounds){
+  //https://stackoverflow.com/questions/3525670/radius-of-viewable-region-in-google-maps-v3
+  // r = radius of the earth in km
+  var r = 6378.8
+  // degrees to radians (divide by 57.2958)
+  var ne_lat = bounds.getNorthEast().lat() / 57.2958
+  var ne_lng = bounds.getNorthEast().lng() / 57.2958
+  var c_lat = bounds.getCenter().lat() / 57.2958
+  var c_lng = bounds.getCenter().lng() / 57.2958
+  // distance = circle radius from center to Northeast corner of bounds
+  var r_km = r * Math.acos(
+    Math.sin(c_lat) * Math.sin(ne_lat) +
+    Math.cos(c_lat) * Math.cos(ne_lat) * Math.cos(ne_lng - c_lng)
+    )
+  return r_km *1000 // radius in meters
 }

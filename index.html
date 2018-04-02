@@ -13,9 +13,9 @@
   <body>
     <h1>Air Quality Web App</h1>
     <input id="pac-input" class="controls" type="text" ng-model="locationInput" placeholder="Enter a location: ">
-    <div ng-controller="addrController">
+    <div>
       <h4>{{address}}</h4>
-      <h4>{{lnglat}}</h4>
+
     </div>
 
     <div id="map"></div>
@@ -27,6 +27,7 @@
 			<td>{{x.location}}</td>
 			<td>{{x.value}}{{x.unit}}</td>
 		</tr>
+    <h4 id = 'll' >{{lnglat}}</h4>
 	</table>
 
     <script async defer

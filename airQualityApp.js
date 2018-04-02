@@ -1,4 +1,4 @@
-var airQualityApp = angular.module('airQualityApp',[]);
+/*var airQualityApp = angular.module('airQualityApp',[]);
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
@@ -6,8 +6,8 @@ airQualityApp.controller('tableController',function($scope, $http){
 		function(response)
 		{
 			$scope.tableData = response.data.results;
-
 		}
 	);
 
 });
+*/
