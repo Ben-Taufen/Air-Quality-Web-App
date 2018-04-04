@@ -4,24 +4,7 @@ var lnglat;
 var lat = 44.976877256928;
 var lng = -93.17484381979153;
 var radius = 8300;
-//will show the current address and longitude/lat of the current center of the map
-//having trouble with the controller, probably a small error that I need to change
-//otherwise this code works
-//to get the current center, just use the lnglat variable. It stores a lnglat object.
-//to get the lat use the function lnglat.lat()
-/*airQualityApp.controller('addrController', function($scope, $http) {
-  $scope.changeLL = function() {
-    console.log("in controller");
-    if(lnglat != null){
-      latit=lnglat.lat();
-      long=lnglat.lng();
-    }
-    $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +latit +","+long+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
-      $scope.address = response.data.results[0].formatted_address;
-      $scope.lnglat = lnglat;
-    });
-  }
-});*/
+
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
@@ -43,7 +26,24 @@ airQualityApp.controller('tableController',function($scope, $http){
               $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
                 function(response)
                 {
+
+                  var results = response.data.results;
                   $scope.tableData = response.data.results;
+                  var i = 0;
+                  for(i=0;i<results.length;i++){
+                    curLat = results[i].coordinates.latitude;
+                    curLng = results[i].coordinates.longitude;
+                    markers.push(new google.maps.Marker({
+                      map: map,
+                      title: "Location: " + results[i].location +
+                      "\nDate: "+results[i].date.local+
+                      "\nParticle: "+results[i].parameter+
+                      "\nMeasurement: "+results[i].value+results[i].unit,
+                      position: {lat: curLat, lng: curLng}
+
+                    }));
+                  }
+
                 }
               );
               $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lat +","+lng+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
@@ -119,21 +119,38 @@ airQualityApp.controller('tableController',function($scope, $http){
               );
 
           });
+          $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+            function(response)
+            {
+              var results = response.data.results;
+              $scope.tableData = response.data.results;
+              var i = 0;
+              for(i=0;i<results.length;i++){
+                curLat = results[i].coordinates.latitude;
+                curLng = results[i].coordinates.longitude;
+                markers.push(new google.maps.Marker({
+                  map: map,
+                  title: "Location: " + results[i].location +
+                  "\nDate: "+results[i].date.local+
+                  "\nParticle: "+results[i].parameter+
+                  "\nMeasurement: "+results[i].value+results[i].unit,
+                  position: {lat: curLat, lng: curLng}
+
+                }));
+              }
+              var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+            }
+          );
+
+          $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lat +","+lng+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
+            document.getElementById("addr").textContent = response.data.results[0].formatted_address;
+            document.getElementById("ll").textContent = lnglat;
+          });
 
     }
   }, 500);
-    $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
-      function(response)
-      {
-        console.log("initialize table");
-        $scope.tableData = response.data.results;
-      }
-    );
 
-    $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lat +","+lng+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
-      document.getElementById("addr").textContent = response.data.results[0].formatted_address;
-      document.getElementById("ll").textContent = lnglat;
-    });
 
 
 
