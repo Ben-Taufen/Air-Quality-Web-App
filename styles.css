@@ -1,12 +1,12 @@
 #map {
   height: 100%;
-  width: 70%;
+  width: 60%;
   float: left;
 }
 #dataTable
 {
 	height: 100%;
-	width: 30%;
+	width: 40%;
 	float: left;
 }
 h1{
