@@ -28,9 +28,9 @@
 		<th>Location</th><th>date</th><th>type</th><th>Value</th>
 		<tr ng-repeat="x in tableData">
 			<td>{{x.location}}</td>
-			<td>{{x.date.local}}</td>
-			<td>{{x.parameter}}</td>
-			<td>{{x.value}}{{x.unit}}</td>
+			<td>{{x.measurements[0].lastUpdated}}</td>
+			<td>{{x.measurements[0].parameter}}</td>
+			<td>{{x.measurements[0].value}}{{x.measurements[0].unit}}</td>
 		</tr>
 	</table>
     </div>

@@ -4,7 +4,7 @@ var lnglat;
 var lat = 44.976877256928;
 var lng = -93.17484381979153;
 var radius = 8300;
-
+var markers = [];
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
@@ -23,27 +23,36 @@ airQualityApp.controller('tableController',function($scope, $http){
               lat=lnglat.lat();
               lng=lnglat.lng();
             }
-              $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+              $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius).then(
                 function(response)
                 {
 
                   var results = response.data.results;
                   $scope.tableData = response.data.results;
                   var i = 0;
+                  markers.forEach(function(marker) {
+                    marker.setMap(null);
+                  });
+                  markers = [];
                   for(i=0;i<results.length;i++){
                     curLat = results[i].coordinates.latitude;
                     curLng = results[i].coordinates.longitude;
+                    var measurements = "";
+                    for(var j=0;j<results[i].measurements.length;j++){
+                      measurements = measurements + "\nParticle: "+results[i].measurements[j].parameter+
+                      " "+results[i].measurements[j].value+results[i].measurements[j].unit
+                    }
                     markers.push(new google.maps.Marker({
                       map: map,
                       title: "Location: " + results[i].location +
-                      "\nDate: "+results[i].date.local+
-                      "\nParticle: "+results[i].parameter+
-                      "\nMeasurement: "+results[i].value+results[i].unit,
+                      //"\nDate: "+results[i].date.local+
+                      measurements,
                       position: {lat: curLat, lng: curLng}
 
                     }));
                   }
-
+                  var markerCluster = new MarkerClusterer(map, markers,
+                {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
                 }
               );
               $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lat +","+lng+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
@@ -119,21 +128,30 @@ airQualityApp.controller('tableController',function($scope, $http){
               );
 
           });
-          $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+          $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius).then(
             function(response)
             {
               var results = response.data.results;
               $scope.tableData = response.data.results;
               var i = 0;
+              markers.forEach(function(marker) {
+                marker.setMap(null);
+              });
+              markers = [];
+
               for(i=0;i<results.length;i++){
                 curLat = results[i].coordinates.latitude;
                 curLng = results[i].coordinates.longitude;
+                var measurements = "";
+                for(var j=0;j<results[i].measurements.length;j++){
+                  measurements = measurements + "\nParticle: "+results[i].measurements[j].parameter+
+                  " "+results[i].measurements[j].value+results[i].measurements[j].unit
+                }
                 markers.push(new google.maps.Marker({
                   map: map,
                   title: "Location: " + results[i].location +
-                  "\nDate: "+results[i].date.local+
-                  "\nParticle: "+results[i].parameter+
-                  "\nMeasurement: "+results[i].value+results[i].unit,
+                  //"\nDate: "+results[i].date.local+
+                  measurements,
                   position: {lat: curLat, lng: curLng}
 
                 }));
