@@ -1,8 +1,9 @@
+
+var airQualityApp = angular.module('airQualityApp',[]);
 var lnglat;
 var lat = 17.6599188;
 var lng = 75.9063906;
 var radius = 1000;
-var airQualityApp = angular.module('airQualityApp',[]);
 //will show the current address and longitude/lat of the current center of the map
 //having trouble with the controller, probably a small error that I need to change
 //otherwise this code works
@@ -28,22 +29,97 @@ if(lnglat != null){
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
-  $scope.$watch(function($rootscope){ return document.getElementById('ll').value}, function(newValue,oldValue){
+  var google_wait = setInterval(() => {
+    if (map !== undefined) {
+      clearInterval(google_wait);
+          // Create the search box and link it to the UI element.
+          var input = document.getElementById('pac-input');
+          var searchBox = new google.maps.places.SearchBox(input);
+          map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+          map.addListener('dragend', function(){
+            //updateLnglat(map.getCenter());
+            lnglat = map.getCenter();
+            radius = getBoundsRadius(map.getBounds());
+            if(lnglat!=null){
+              lat=lnglat.lat();
+              lng=lnglat.lng();
+            }
+              $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+                function(response)
+                {
+                  console.log("request made");
+                  $scope.tableData = response.data.results;
+                }
+              );
+          })
+          // Bias the SearchBox results towards current map's viewport.
+          map.addListener('bounds_changed', function() {
+            searchBox.setBounds(map.getBounds());
+
+
+
+          });
+
+          var markers = [];
+          // Listen for the event fired when the user selects a prediction and retrieve
+          // more details for that place.
+          searchBox.addListener('places_changed', function() {
+            var places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+              return;
+            }
+
+            // Clear out the old markers.
+            markers.forEach(function(marker) {
+              marker.setMap(null);
+            });
+            markers = [];
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+              if (!place.geometry) {
+                console.log("Returned place contains no geometry");
+                return;
+              }
+              var icon = {
+                url: place.icon,
+                size: new google.maps.Size(71, 71),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17, 34),
+                scaledSize: new google.maps.Size(25, 25)
+              };
+
+              // Create a marker for each place.
+              markers.push(new google.maps.Marker({
+                map: map,
+                icon: icon,
+                title: place.name,
+                position: place.geometry.location
+
+              }));
+
+              if (place.geometry.viewport) {
+                // Only geocodes have viewport.
+                bounds.union(place.geometry.viewport);
+              } else {
+                bounds.extend(place.geometry.location);
+              }
+            });
+            map.fitBounds(bounds);
+          });
+    }
+  }, 500);
+  $scope.lnglat = lnglat;
+  $scope.$watch('lnglat', function(newValue,oldValue){
     console.log(lnglat);
     console.log(newValue);
-    if(newValue!=null){
-      lat=newValue.lat();
-      lng=newValue.lng();
-    }
-    $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
-  		function(response)
-  		{
-        console.log("request made");
-  			$scope.tableData = response.data.results;
-  		}
-  	);
 
-  })
+
+
+  });
+
 
 
 });
@@ -56,78 +132,13 @@ function initMap() {
           mapTypeId: 'roadmap'
         });
 
-        // Create the search box and link it to the UI element.
-        var input = document.getElementById('pac-input');
-        var searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-        map.addListener('dragend', function(){
-          updateLnglat(map.getCenter());
-          radius = getBoundsRadius(map.getBounds());
-        })
-        // Bias the SearchBox results towards current map's viewport.
-        map.addListener('bounds_changed', function() {
-          searchBox.setBounds(map.getBounds());
-
-
-
-        });
-
-        var markers = [];
-        // Listen for the event fired when the user selects a prediction and retrieve
-        // more details for that place.
-        searchBox.addListener('places_changed', function() {
-          var places = searchBox.getPlaces();
-
-          if (places.length == 0) {
-            return;
-          }
-
-          // Clear out the old markers.
-          markers.forEach(function(marker) {
-            marker.setMap(null);
-          });
-          markers = [];
-
-          // For each place, get the icon, name and location.
-          var bounds = new google.maps.LatLngBounds();
-          places.forEach(function(place) {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
-            }
-            var icon = {
-              url: place.icon,
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
-
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-              map: map,
-              icon: icon,
-              title: place.name,
-              position: place.geometry.location
-
-            }));
-
-            if (place.geometry.viewport) {
-              // Only geocodes have viewport.
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
-          });
-          map.fitBounds(bounds);
-        });
-
 }
 function updateLnglat(val){
   lnglat=val;
   document.getElementById('ll').value = lnglat;
   //document.getElementById('ll').innerHTML = lnglat;
   document.getElementById('ll').textContent = lnglat;
+
 }
 
 function getBoundsRadius(bounds){
