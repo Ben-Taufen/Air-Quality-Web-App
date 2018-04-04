@@ -109,6 +109,14 @@ airQualityApp.controller('tableController',function($scope, $http){
               }
             });
             map.fitBounds(bounds);
+            lnglat = map.getCenter();
+            radius = getBoundsRadius(map.getBounds());
+              $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+                function(response)
+                {
+                  $scope.tableData = response.data.results;
+                }
+              );
 
           });
 
