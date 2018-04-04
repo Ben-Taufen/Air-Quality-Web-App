@@ -20,8 +20,8 @@
     </div>
 
     <div id="map"></div>
-
-    <!--Table: needs to be updated so that it populates based on whats in the map. Currently populates based of of openAQ's measurements-->
+	  
+    <div id="dataTable">
 	<table ng-controller="tableController">
 		<th>Location</th><th>Value</th>
 		<tr ng-repeat="x in tableData">
@@ -29,7 +29,7 @@
 			<td>{{x.value}}{{x.unit}}</td>
 		</tr>
 	</table>
-
+    </div>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs&libraries=places&callback=initMap">
    </script>
