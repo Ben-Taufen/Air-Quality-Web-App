@@ -9,10 +9,13 @@ var heatMap = false;
 var coordinates = "";
 var pRadius = "";
 var parameter = "";
-var particle = "";
+//var particle = "";
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
+	$scope.particleTypeList = [ "", "pm25", "pm10", "so2", "no2", "o3", "co", "bc"];
+	$scope.particle = "";
+	
   var google_wait = setInterval(() => {
     if (map !== undefined) {
       clearInterval(google_wait);
@@ -30,8 +33,8 @@ airQualityApp.controller('tableController',function($scope, $http){
             }
             coordinates = "coordinates="+lat+","+lng;
             pRadius = "&radius="+radius;
-            if(particle!==""){
-              parameter="&parameter="+particle;
+            if($scope.particle!==""){
+              parameter="&parameter="+$scope.particle;
             }
               $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius+parameter).then(
                 function(response)
@@ -143,8 +146,8 @@ airQualityApp.controller('tableController',function($scope, $http){
           });
           coordinates = "coordinates="+lat+","+lng;
           pRadius = "&radius="+radius;
-          if(particle!==""){
-            parameter="&parameter="+particle;
+          if($scope.particle!==""){
+            parameter="&parameter="+$scope.particle;
           }
           $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius+parameter).then(
             function(response)
