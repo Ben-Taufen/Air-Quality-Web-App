@@ -5,6 +5,11 @@ var lat = 44.976877256928;
 var lng = -93.17484381979153;
 var radius = 8300;
 var markers = [];
+var heatMap = false;
+var coordinates = "";
+var pRadius = "";
+var parameter = "";
+var particle = "";
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
@@ -23,7 +28,12 @@ airQualityApp.controller('tableController',function($scope, $http){
               lat=lnglat.lat();
               lng=lnglat.lng();
             }
-              $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius).then(
+            coordinates = "coordinates="+lat+","+lng;
+            pRadius = "&radius="+radius;
+            if(particle!==""){
+              parameter="&parameter="+particle;
+            }
+              $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius+parameter).then(
                 function(response)
                 {
 
@@ -50,6 +60,9 @@ airQualityApp.controller('tableController',function($scope, $http){
                       position: {lat: curLat, lng: curLng}
 
                     }));
+                    if(heatMap){
+
+                    }
                   }
                   var markerCluster = new MarkerClusterer(map, markers,
                 {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
@@ -59,7 +72,7 @@ airQualityApp.controller('tableController',function($scope, $http){
                 document.getElementById("addr").textContent = response.data.results[0].formatted_address;
                 document.getElementById("ll").textContent = lnglat;
               });
-
+              parameter="";
           });
           // Bias the SearchBox results towards current map's viewport.
           map.addListener('bounds_changed', function() {
@@ -128,7 +141,12 @@ airQualityApp.controller('tableController',function($scope, $http){
               );
 
           });
-          $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius).then(
+          coordinates = "coordinates="+lat+","+lng;
+          pRadius = "&radius="+radius;
+          if(particle!==""){
+            parameter="&parameter="+particle;
+          }
+          $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius+parameter).then(
             function(response)
             {
               var results = response.data.results;
