@@ -19,7 +19,9 @@
       <h4 id = 'll' >{{lnglat}}</h4>
 
     </div>
-
+    <div id="floating-panel">
+      <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+    </div>
     <div id="map"></div>
 
     <div id="dataTable">
@@ -36,7 +38,7 @@
     </div>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs&libraries=places&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs&libraries=places,visualization&callback=initMap">
    </script>
   </body>
 </html>

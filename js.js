@@ -5,11 +5,11 @@ var lat = 44.976877256928;
 var lng = -93.17484381979153;
 var radius = 8300;
 var markers = [];
-var heatMap = false;
+var heatMap = true;
 var coordinates = "";
 var pRadius = "";
 var parameter = "";
-var particle = "";
+var particle = "co";
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
@@ -37,6 +37,7 @@ airQualityApp.controller('tableController',function($scope, $http){
                 function(response)
                 {
 
+                  var heatMapData=[];
                   var results = response.data.results;
                   $scope.tableData = response.data.results;
                   var i = 0;
@@ -61,9 +62,17 @@ airQualityApp.controller('tableController',function($scope, $http){
 
                     }));
                     if(heatMap){
-
+                      heatMapData.push({location: new google.maps.LatLng(curLat, curLng), weight: results[i].measurements[0].value});
                     }
                   }
+                  if(heatMap){
+                  var heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatMapData
+                  });
+                  heatmap.setMap(map);
+                }else{
+                  heatmap.setMap(null);
+                }
                   var markerCluster = new MarkerClusterer(map, markers,
                 {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
                 }
@@ -181,7 +190,7 @@ airQualityApp.controller('tableController',function($scope, $http){
 
           $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lat +","+lng+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
             document.getElementById("addr").textContent = response.data.results[0].formatted_address;
-            document.getElementById("ll").textContent = lnglat;
+            document.getElementById("ll").textContent = map.getCenter();
           });
 
     }
@@ -200,6 +209,9 @@ function initMap() {
           mapTypeId: 'roadmap'
         });
 
+}
+function toggleHeatmap() {
+  heatMap=!heatMap;
 }
 function updateLnglat(val){
   lnglat=val;
