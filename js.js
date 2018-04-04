@@ -1,18 +1,14 @@
 
 var airQualityApp = angular.module('airQualityApp',[]);
 var lnglat;
-var lat = 17.6599188;
-var lng = 75.9063906;
-var radius = 1000;
+var lat = 44.976877256928;
+var lng = -93.17484381979153;
+var radius = 8300;
 //will show the current address and longitude/lat of the current center of the map
 //having trouble with the controller, probably a small error that I need to change
 //otherwise this code works
 //to get the current center, just use the lnglat variable. It stores a lnglat object.
 //to get the lat use the function lnglat.lat()
-if(lnglat != null){
-  lat=lnglat.lat();
-  lng=lnglat.lng();
-}
 /*airQualityApp.controller('addrController', function($scope, $http) {
   $scope.changeLL = function() {
     console.log("in controller");
@@ -47,11 +43,15 @@ airQualityApp.controller('tableController',function($scope, $http){
               $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
                 function(response)
                 {
-                  console.log("request made");
                   $scope.tableData = response.data.results;
                 }
               );
-          })
+              $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lat +","+lng+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
+                document.getElementById("addr").textContent = response.data.results[0].formatted_address;
+                document.getElementById("ll").textContent = lnglat;
+              });
+
+          });
           // Bias the SearchBox results towards current map's viewport.
           map.addListener('bounds_changed', function() {
             searchBox.setBounds(map.getBounds());
@@ -64,6 +64,7 @@ airQualityApp.controller('tableController',function($scope, $http){
           // Listen for the event fired when the user selects a prediction and retrieve
           // more details for that place.
           searchBox.addListener('places_changed', function() {
+            
             var places = searchBox.getPlaces();
 
             if (places.length == 0) {
@@ -109,16 +110,21 @@ airQualityApp.controller('tableController',function($scope, $http){
             });
             map.fitBounds(bounds);
           });
+
     }
   }, 500);
-  $scope.lnglat = lnglat;
-  $scope.$watch('lnglat', function(newValue,oldValue){
-    console.log(lnglat);
-    console.log(newValue);
+    $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+      function(response)
+      {
+        console.log("initialize table");
+        $scope.tableData = response.data.results;
+      }
+    );
 
-
-
-  });
+    $http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +lat +","+lng+ "&key=AIzaSyAZnh-iHB9U_H2RYHtK_l0sNH9tHzWLaNs").then(function(response) {
+      document.getElementById("addr").textContent = response.data.results[0].formatted_address;
+      document.getElementById("ll").textContent = lnglat;
+    });
 
 
 
@@ -127,7 +133,7 @@ airQualityApp.controller('tableController',function($scope, $http){
 var map;
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 17.6599188, lng: 75.9063906},
+          center: {lat: 44.976877256928, lng: -93.17484381979153},
           zoom: 13,
           mapTypeId: 'roadmap'
         });
