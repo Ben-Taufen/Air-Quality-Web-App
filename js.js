@@ -16,8 +16,8 @@ airQualityApp.controller('tableController',function($scope, $http){
 	//
 	$scope.particleTypeList = [ "", "pm25", "pm10", "so2", "no2", "o3", "co", "bc"];
 	$scope.particle = "";
-
-
+	$scope.min = "0";
+	$scope.max = "1000000";
   var google_wait = setInterval(() => {
     if (map !== undefined) {
       clearInterval(google_wait);

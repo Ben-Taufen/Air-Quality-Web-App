@@ -28,14 +28,17 @@
 		<select ng-model="particle">
 			<option ng-repeat="type in particleTypeList">{{type}}</option>
 		</select>
+	    		<p>greater than: <input type="text" ng-model="min"></p>
+		<p>less than: <input type="text" ng-model="max"></p>
 		<table >
 			<th>Location</th><th>date</th><th>type</th><th>Value</th>
-			<tr ng-repeat="x in tableData">
+			<tr ng-repeat="x in tableData" ng-if="x.measurements[0].value > min  && x.measurements[0].value < max">
 				<td>{{x.location}}</td>
 				<td>{{x.measurements[0].lastUpdated}}</td>
 				<td>{{x.measurements[0].parameter}}</td>
 				<td>{{x.measurements[0].value}}{{x.measurements[0].unit}}</td>
 			</tr>
+		
 		</table>
     </div>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
