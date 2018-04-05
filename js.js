@@ -5,28 +5,34 @@ var lat = 44.976877256928;
 var lng = -93.17484381979153;
 var radius = 8300;
 var markers = [];
-var heatMap = true;
+var heatMap = false;
 var coordinates = "";
 var pRadius = "";
 var parameter = "";
-<<<<<<< HEAD
-var particle = "co";
-=======
+
 //var particle = "";
->>>>>>> 06f6da3b70f4acd22452040f50e6e9844888237f
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
 	$scope.particleTypeList = [ "", "pm25", "pm10", "so2", "no2", "o3", "co", "bc"];
 	$scope.particle = "";
-	
+
+
   var google_wait = setInterval(() => {
     if (map !== undefined) {
       clearInterval(google_wait);
           // Create the search box and link it to the UI element.
           var input = document.getElementById('pac-input');
+          var hm = document.getElementById('floating-panel');
           var searchBox = new google.maps.places.SearchBox(input);
           map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+          map.controls[google.maps.ControlPosition.TOP_RIGHT].push(hm);
+          if($scope.particle!==""){
+            hm.style.visibility = 'show';
+          }else{
+            hm.style.visibility = 'hidden';
+          }
+
           map.addListener('dragend', function(){
             //updateLnglat(map.getCenter());
             lnglat = map.getCenter();
@@ -35,11 +41,16 @@ airQualityApp.controller('tableController',function($scope, $http){
               lat=lnglat.lat();
               lng=lnglat.lng();
             }
-            coordinates = "coordinates="+lat+","+lng;
-            pRadius = "&radius="+radius;
             if($scope.particle!==""){
               parameter="&parameter="+$scope.particle;
+              hm.style.visibility = 'show';
+            }else{
+              hm.style.visibility = 'hidden';
             }
+            markers.forEach(function(marker) {
+              marker.setMap(null);
+            });
+              markers = [];
               $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius+parameter).then(
                 function(response)
                 {
@@ -48,6 +59,7 @@ airQualityApp.controller('tableController',function($scope, $http){
                   var results = response.data.results;
                   $scope.tableData = response.data.results;
                   var i = 0;
+
                   markers.forEach(function(marker) {
                     marker.setMap(null);
                   });
@@ -72,11 +84,19 @@ airQualityApp.controller('tableController',function($scope, $http){
                       heatMapData.push({location: new google.maps.LatLng(curLat, curLng), weight: results[i].measurements[0].value});
                     }
                   }
-                  if(heatMap){
                   var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatMapData
                   });
-                  heatmap.setMap(map);
+                  /*$scope.toggleHeatmap = function(){
+                    heatmap.setMap(heatmap.getMap() ? null : map);
+                  };*/
+                  if(heatMap){
+                    heatmap.setMap(map);
+                    heatmap.set('radius',20);
+                    markers.forEach(function(marker) {
+                      marker.setMap(null);
+                    });
+                    markers=[];
                 }else{
                   heatmap.setMap(null);
                 }
@@ -90,6 +110,7 @@ airQualityApp.controller('tableController',function($scope, $http){
               });
               parameter="";
           });
+
           // Bias the SearchBox results towards current map's viewport.
           map.addListener('bounds_changed', function() {
             searchBox.setBounds(map.getBounds());
@@ -149,7 +170,7 @@ airQualityApp.controller('tableController',function($scope, $http){
             map.fitBounds(bounds);
             lnglat = map.getCenter();
             radius = getBoundsRadius(map.getBounds());
-              $http.get("https://api.openaq.org/v1/measurements?coordinates="+lat+","+lng+"&radius="+radius).then(
+              $http.get("https://api.openaq.org/v1/latest?coordinates="+lat+","+lng+"&radius="+radius+parameter).then(
                 function(response)
                 {
                   $scope.tableData = response.data.results;
@@ -217,9 +238,11 @@ function initMap() {
         });
 
 }
-function toggleHeatmap() {
+
+function toggleHeatmap(){
   heatMap=!heatMap;
 }
+
 function updateLnglat(val){
   lnglat=val;
   document.getElementById('ll').value = lnglat;
