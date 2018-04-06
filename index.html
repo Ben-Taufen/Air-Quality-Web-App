@@ -32,6 +32,9 @@
 		</select>
 	    		<p>greater than: <input type="text" ng-model="min"></p>
 		<p>less than: <input type="text" ng-model="max"></p>
+	    	<select ng-model="mode">
+			<option ng-repeat="x in historicalOrLatest">{{x}}</option>
+		</select>
 		<table >
 			<th>Location</th><th>date</th><th>type</th><th>Value</th>
 			<tr ng-repeat="x in tableData" ng-if="x.measurements[0].value > min  && x.measurements[0].value < max">
