@@ -18,6 +18,8 @@ airQualityApp.controller('tableController',function($scope, $http){
 
 	$scope.particleTypeList = [ "", "pm25", "pm10", "so2", "no2", "o3", "co", "bc"];
 	$scope.particle = "";
+	$scope.historicalOrLatest = ["latest", "historical"];
+	$scope.mode = $scope.historicalOrLatest[0];
 	$scope.min = "0";
 	$scope.max = "1000000";
   $scope.$watch('particle', function(){
