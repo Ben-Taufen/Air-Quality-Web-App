@@ -19,12 +19,13 @@
       <h4 id = 'll' >{{lnglat}}</h4>
 
     </div>
+    <div id="floating-panel">
+      <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+    </div>
     <div id="map"></div>
-
+    <div id="legend"><h3>Legend</h3></div>
     <div id="dataTable" ng-controller="tableController">
-      <div id="floating-panel">
-        <button onclick="toggleHeatmap()">Toggle Heatmap</button>
-      </div>
+
 		<select ng-model="particle">
 			<option ng-repeat="type in particleTypeList">{{type}}</option>
 		</select>
@@ -38,7 +39,7 @@
 				<td>{{x.measurements[0].parameter}}</td>
 				<td>{{x.measurements[0].value}}{{x.measurements[0].unit}}</td>
 			</tr>
-		
+
 		</table>
     </div>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>

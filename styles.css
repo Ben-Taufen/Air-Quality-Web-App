@@ -21,3 +21,6 @@ html, body {
 table, th, td {
    border: 1px solid black;
 }
+#floating-panel {
+  visibility: hidden;
+}

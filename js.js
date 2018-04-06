@@ -10,14 +10,25 @@ var coordinates = "";
 var pRadius = "";
 var parameter = "";
 
+
 //var particle = "";
 
 airQualityApp.controller('tableController',function($scope, $http){
 	//
+
 	$scope.particleTypeList = [ "", "pm25", "pm10", "so2", "no2", "o3", "co", "bc"];
 	$scope.particle = "";
 	$scope.min = "0";
 	$scope.max = "1000000";
+  $scope.$watch('particle', function(){
+    var hm = document.getElementById('floating-panel');
+    if($scope.particle!==''){
+      hm.style.visibility='visible';
+    }else{
+      hm.style.visibility='hidden';
+    }
+
+  });
   var google_wait = setInterval(() => {
     if (map !== undefined) {
       clearInterval(google_wait);
@@ -27,11 +38,7 @@ airQualityApp.controller('tableController',function($scope, $http){
           var searchBox = new google.maps.places.SearchBox(input);
           map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
           map.controls[google.maps.ControlPosition.TOP_RIGHT].push(hm);
-          if($scope.particle!==""){
-            hm.style.visibility = 'show';
-          }else{
-            hm.style.visibility = 'hidden';
-          }
+
 
           map.addListener('dragend', function(){
             //updateLnglat(map.getCenter());
@@ -41,11 +48,8 @@ airQualityApp.controller('tableController',function($scope, $http){
               lat=lnglat.lat();
               lng=lnglat.lng();
             }
-            if($scope.particle!==""){
+            if($scope.particle!==''){
               parameter="&parameter="+$scope.particle;
-              hm.style.visibility = 'show';
-            }else{
-              hm.style.visibility = 'hidden';
             }
             markers.forEach(function(marker) {
               marker.setMap(null);
@@ -83,6 +87,9 @@ airQualityApp.controller('tableController',function($scope, $http){
                     if(heatMap){
                       heatMapData.push({location: new google.maps.LatLng(curLat, curLng), weight: results[i].measurements[0].value});
                     }
+                    else{
+                      heatMapData = [];
+                    }
                   }
                   var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatMapData
@@ -98,7 +105,9 @@ airQualityApp.controller('tableController',function($scope, $http){
                     });
                     markers=[];
                 }else{
+
                   heatmap.setMap(null);
+                  heatMapData=[];
                 }
                   var markerCluster = new MarkerClusterer(map, markers,
                 {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
@@ -236,6 +245,18 @@ function initMap() {
           zoom: 13,
           mapTypeId: 'roadmap'
         });
+        /*var legend = document.getElementById('legend');
+               for (var key in icons) {
+                 var type = icons[key];
+                 var name = type.name;
+                 var icon = type.icon;
+                 var div = document.createElement('div');
+                 div.innerHTML = '<img src="' + icon + '"> ' + name;
+                 legend.appendChild(div);
+               }
+
+               map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+             }  */
 
 }
 
