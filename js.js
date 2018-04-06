@@ -26,6 +26,10 @@ airQualityApp.controller('tableController',function($scope, $http){
       hm.style.visibility='visible';
     }else{
       hm.style.visibility='hidden';
+      markers.forEach(function(marker) {
+        marker.setMap(null);
+      });
+      markers = [];
     }
 
   });
@@ -94,12 +98,27 @@ airQualityApp.controller('tableController',function($scope, $http){
                   var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatMapData
                   });
+
                   /*$scope.toggleHeatmap = function(){
                     heatmap.setMap(heatmap.getMap() ? null : map);
                   };*/
                   if(heatMap){
                     heatmap.setMap(map);
-                    heatmap.set('radius',20);
+                    heatmap.set('radius',100);
+                    heatmap.set('gradient',['rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)']);
                     markers.forEach(function(marker) {
                       marker.setMap(null);
                     });
@@ -245,20 +264,18 @@ function initMap() {
           zoom: 13,
           mapTypeId: 'roadmap'
         });
-        /*var legend = document.getElementById('legend');
-               for (var key in icons) {
-                 var type = icons[key];
-                 var name = type.name;
-                 var icon = type.icon;
-                 var div = document.createElement('div');
-                 div.innerHTML = '<img src="' + icon + '"> ' + name;
+        var legend = document.getElementById('legend');
+
+                 var div = document.createElement('p');
+                 div.innerHTML = 'More intense heatmap = larger particle value';
                  legend.appendChild(div);
-               }
 
-               map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
-             }  */
 
-}
+
+               map.controls[google.maps.ControlPosition.BOTTOM].push(legend);
+ }
+
+
 
 function toggleHeatmap(){
   heatMap=!heatMap;
